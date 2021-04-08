@@ -8,9 +8,9 @@
 
 # Model-Driven Telemetry
 
-Network data collection for today s high-density platforms and scale is becoming a tedious task for monitoring and troubleshooting. There is a need for operational data from different devices in the network to be collected in a centralized location, so that cross-functional groups can collaboratively work to analyze and fix an issue.
+Network data collection for today s high-density platforms and scale is becoming a tedious task for monitoring and troubleshooting. There is a need for operational data from different devices in the network to be collected in a centralized location so that cross-functional groups can collaboratively work to analyze and fix an issue.
 
-**Model-driven Telemetry** (MDT) provides a mechanism to stream data from an MDT-capable device to a destination. It uses a new approach for network monitoring in which data is streamed from network devices continuously using a push model and provides near real-time access to operational statistics for monitoring data. Applications can subscribe to specific data items they need, by using standards-based YANG data models over open protocols. Structured data is published at a defined cadence or on-change, based upon the subscription criteria and data type.
+**Model-driven Telemetry** (MDT) provides a mechanism to stream data from an MDT-capable device to a destination. It uses a new approach for network monitoring in which data is streamed from network devices continuously using a push model and provides near real-time access to operational statistics for monitoring data. Applications can subscribe to specific data items they need by using standards-based YANG data models over open protocols. Structured data is published at a defined cadence or on-change, based upon the subscription criteria and data type.
 
 There are two main MDT Publication/Subscription models, Dial-in and Dial-out:
 
@@ -20,13 +20,13 @@ There are two main MDT Publication/Subscription models, Dial-in and Dial-out:
 
 ![](imgs/1-pubsub.png)
 
-In this lab we cover the **gRPC Dial-out** telemetry that was released in IOS XE 16.10 along with the open source software stack for collection and visualization:
+In this lab, we cover the **gRPC Dial-out** telemetry that was released in IOS XE 16.10 along with the open source software stack for collection and visualization:
 
 - **Telegraf (Collection)** with the **cisco\_telemetry\_mdt** plugin that decodes the gRPC data to text
 - **InfluxDB (Storage)**: an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet of Things sensor data, and real-time analytics. It provides a SQL-like language with built-in time functions for querying a data structure composed of measurements, series, and points
 - **Grafana (GUI visualization)**: an open-source platform to build monitoring and analytics dashboards
 
-Every LAB POD includes a full installation of all the above-mentioned software. 
+Every LAB POD includes a full installation of all the software mentioned above. 
 
 The focus of this lab is on gRPC with TLS security certificates: 
 
@@ -35,13 +35,13 @@ The focus of this lab is on gRPC with TLS security certificates:
 
 # gRPC + TLS
 
-The gRPC MDT interface was introduced in IOS XE 16.10 and in 17.2 support for TLS security encapsulation was added. This means that the gRPC telemetry data can be sent in un-encrypted in plain text, or encrypted using TLS certificates as will be explored further below.
+The gRPC MDT interface was introduced in IOS XE 16.10, and in 17.2, support for TLS security encapsulation was added. This means that the gRPC telemetry data can be sent unencrypted in plain text or encrypted using TLS certificates as will be explored further below.
 
-Before looking at the gRPC-TLS feature configuration, the required TLS certificates need to be installed into IOS XE. See the previous version of the lab guide for those details, it's a manual process that is error prone. This time the certificates can be loaded using the **gNOI cert.proto certificate management API** as detailed in the DayN/gNOI/cert.proto module. Refer to that module for details of the gNOI cert.proto.
+Before looking at the gRPC-TLS feature configuration, the required TLS certificates need to be installed into IOS XE. See the previous variations of the lab guide for those details; it's a manual process that is error-prone. This time the certificates can be loaded using the **gNOI cert.proto certificate management API** as detailed in the DayN/gNOI/cert.proto module. Refer to that module for details of the gNOI cert.proto.
 
 ## Load the certificates from the Ubuntu into the C9300 with the gnoi_cert tooling
 
-Follow the similar proceedure as above to use the gnoi_cert tooling to install the **grpc-dial-out-tls** certificate into the IOS XE truststore.
+Follow the similar procedure as above to use the gnoi_cert tooling to install the **grpc-dial-out-tls** certificate into the IOS XE truststore.
 
 **cd ~/gnmi_ssl/certs-grpc-tls**
 
@@ -74,7 +74,7 @@ The main difference when creating a gRPC-TLS configuration is to specify the **g
 
 receiver ip address 10.1.1.3 57500 **protocol grpc-tls profile grpc-dial-out-tls**
 
-A complete and example gRPC-TLS configuration is shown below:
+An completed example gRPC-TLS configuration is shown below
 
 ```
 conf t
@@ -118,9 +118,9 @@ Proceed to the Grafana GUI , where the telemetry data is visualized
 
 ![](imgs/4-mdt-solution.png)
 
-Telegraf is the tool that receives and decodes the telemetry data that is sent from the IOS XE devices. It processes the data and sends it into the InfluxDB datastore, where Grafana can access it in order to create visualizations.
+Telegraf is the tool that receives and decodes the telemetry data that is sent from the IOS XE devices. It processes the data and sends it into the InfluxDB datastore, where Grafana can access it to create visualizations.
 
-Telegraf runs inside the  "tig_mdt" Docker container. To connect to this container from the Ubuntu host follow the steps below:
+Telegraf runs inside the  "tig_mdt" Docker container. To connect to this container from the Ubuntu host, follow the steps below:
 
 ```
 auto@automation:~$ docker ps
@@ -137,7 +137,7 @@ auto@automation:~$ docker exec -it tig_mdt /bin/bash
 # ls
 ```
 
-There is one file for each telemetry interface: **NETCONF**, **gRPC**, and **gNMI**. Review each file to understand which. YANG data is being collected by which interface.
+There is one file for each telemetry interface: **NETCONF**, **gRPC**, and **gNMI**. Review each file to understand which YANG data is being collected by which interface.
 
 ```
 # cat telegraf-grpc.conf
@@ -147,13 +147,13 @@ There is one file for each telemetry interface: **NETCONF**, **gRPC**, and **gNM
 
 ![](imgs/6-docker_exec_cat_grpc.png)
 
-Inside the Docker container navigate to the telegraf directory and review the configuration file and log by tailing the log file with the command **tail -F /tmp/telegraf-grpc.log** 
+Inside the Docker container, navigate to the telegraf directory and review the configuration file, and log by tailing the log file with the command **tail -F /tmp/telegraf-grpc.log** 
 
 The **telegraf-grpc.conf** configuration file shows us the following:
 
 **gRPC Dial-Out Telemetry Input:** This defines the telegraf plugin (cisco\_telemetry\_mdt) that is being used to receive the data, as well as the port (57500)
 
-**Output Plugin:** This defines where the received data is sent to (outputs.influxdb) the database to use (telegraf) and the URL for InfluxDB ([http://127.0.0.1:8086](http://127.0.0.1:8086/))
+**Output Plugin:** This defines where the received data is sent to (outputs.influxdb), the database to use (telegraf) and the URL for InfluxDB ([http://127.0.0.1:8086](http://127.0.0.1:8086/))
 
 **Outputs.file** : sends a copy of the data to the text file at /root/telegraf/telegraf.log
 
@@ -168,7 +168,7 @@ Examining the output of the telegraf.log file shows the data coming in from the 
 ## The Influx Database (influxdb)
 
 
-InfluxDB is already installed and started within the same Docker container. Lets verify it s working correctly by connecting into the Docker contain where it is running.
+InfluxDB is already installed and started within the same Docker container. Let's verify its working correctly by connecting into the Docker contain where it is running.
 
 Step 1. Verify InfluxDB is running with the command **ps xa | grep influx**
 
@@ -232,14 +232,14 @@ time count
 The output above shows:
 
 - a **telegraf** database as defined in the Telegraf config file which holds that telemetry data
-- one measurement defined as the YANG model used for the gRPC Dial-out subscription (Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization)
+- one measurement defined as the YANG model used for the gRPC Dial-out subscription (Cisco-IOS-XE-process-CPU-oper:CPU-usage/CPU-utilization)
 - number of publications received so far (33251).
 
 ![](imgs/8-influx.png)
 
 # Grafana Dashboard
 
-Grafana is an open-source platform to build monitoring and analytics dashboards that also runs within the Docker container. Navigating to the web based user interface allows us to see the dashboard with the Model Driven Telemetry data
+Grafana is an open-source platform to build monitoring and analytics dashboards that also runs within the Docker container. Navigating to the web based user interface allows us to see the dashboard with the Model Driven Telemetry data.
 
 Verify Grafana is running: with the following command: **ps xa | grep grafana**
 
@@ -251,9 +251,9 @@ Verify Grafana is running: with the following command: **ps xa | grep grafana**
 
 Open the Firefox browser and navigate to the Grafana tab or shortcut. 
 
-The window on the **LEFT** indicates the non-secured telemetry connection, that has been sending data the whole time.
+The window on the **LEFT** indicates the non-secured telemetry connection that has been sending data the whole time.
 
-The window on the **RIGHT** indicates the secured telemetry connection, that has just come up as there is no historical mesurements for this counter.
+The window on the **RIGHT** indicates the secured telemetry connection that has just come up as there is no historical measurements for this counter.
 
 ![](./imgs/grafana-secure.png)
 
@@ -262,7 +262,7 @@ The window on the **RIGHT** indicates the secured telemetry connection, that has
 
 The telegraf configuration file that is receiving the telemetry data on port 57502 is within the **tig_mdt** Docker container at **/root/telegraf/**
 
-The related TLS certifcates have been preinstalled into the Docker container's Telegraf configuration, located at **/root/telegraf/ssl** 
+The related TLS certificates have been preinstalled into the Docker container's Telegraf configuration, located at **/root/telegraf/ssl** 
 
 Explore the Docker container by running the command: **docker exec -it tig_mdt /bin/bash**
 
@@ -276,13 +276,13 @@ Review the content from https://grafana.com/grafana/dashboards/13462
 
 The Dashboard JSON can be imported into Grafana and,
 
-The CLI configuration for the 16 XPATHS can be copy/paste into the C9300
+The CLI configuration for the 16 XPATHS can be copy/paste into the C9300.
 
-This provides a very basic device health dashboard view as well as a simple way to view and validate the telemetry data that has been enabled for some of the most common features
+This provides a fundamental device health dashboard view as well as a simple way to view and validate the telemetry data that has been enabled for some of the most common features.
 
 
 # Conclusion
 
-This completes the gRPC-TLS section of the lab module. Refer to the previous lab guide, linked below, that covers gRPC telemetry in more detail, as well as Telegraf, InfluxDB, and Grafana - including the tig_mdt Docker container. This lab modules focus is on the gRPC-TLS telemetry connection, while the previous lab guide covers each of the Model Driven Telemetry (MDT) interfaces (NETCONF, gRPC, gNMI) in greater detail.
+This completes the gRPC-TLS section of the lab module. Refer to the previous lab guide, linked below, that covers gRPC telemetry in more detail, as well as Telegraf, InfluxDB, and Grafana - including the tig_mdt Docker container. This lab module focuses on the gRPC-TLS telemetry connection, while the previous lab guide covers each of the Model Driven Telemetry (MDT) interfaces (NETCONF, gRPC, gNMI) in greater detail.
 
 [https://github.com/jeremycohoe/cisco-ios-xe-programmability-lab-module-6-mdt/blob/master/README-172.md](https://github.com/jeremycohoe/cisco-ios-xe-programmability-lab-module-6-mdt/blob/master/README-172.md)	
